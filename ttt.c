@@ -23,11 +23,12 @@ void destroyStack(struct stack *ps)
 
 void push(struct stack *ps, char *place)
 {
-    if (s->top == STACK_SIZE - 1) {
+    if (ps->top == STACK_SIZE - 1) {
         return;
     }
     ps->top++;
-    strcpy(s->place[s->top], place);
+    strncpy(ps->place[ps->top], place, sizeof(ps->place[0]) - 1);
+    ps->place[ps->top][sizeof(ps->place[0]) - 1] = '\0';
 }
 void pop(struct stack *ps)
 {
@@ -43,7 +44,6 @@ void printOrder(struct stack *s)
     }
     printf("order of moving:\n");
     for (int i = 0; i <= s->top; i++) {
-        s->place[i][strcspn(s->place[i], "\n")] = '\0';
         printf("%d: %s ", i + 1, s->place[i]);
     }
     printf("\n");
