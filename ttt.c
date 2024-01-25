@@ -37,14 +37,14 @@ void pop(struct stack *ps)
     }
     ps->top--;
 }
-void printOrder(struct stack *s)
+void printOrder(struct stack *ps)
 {
-    if (s->top == -1) {
+    if (ps->top == -1) {
         return;
     }
     printf("order of moving:\n");
-    for (int i = 0; i <= s->top; i++) {
-        printf("%d: %s ", i + 1, s->place[i]);
+    for (int i = 0; i <= ps->top; i++) {
+        printf("%d: %s ", i + 1, ps->place[i]);
     }
     printf("\n");
 }
