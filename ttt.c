@@ -3,6 +3,52 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define STACK_SIZE 9
+
+struct stack {
+    int top;
+    char place[STACK_SIZE][3];
+};
+struct stack *s;
+
+void initStack(struct stack **ps)
+{
+    *ps = malloc(sizeof(struct stack));
+    (*ps)->top = -1;
+}
+void destroyStack(struct stack *ps)
+{
+    free(ps);
+}
+
+void push(struct stack *ps, char *place)
+{
+    if (s->top == STACK_SIZE - 1) {
+        return;
+    }
+    ps->top++;
+    strcpy(s->place[s->top], place);
+}
+void pop(struct stack *ps)
+{
+    if (ps->top == -1) {
+        return;
+    }
+    ps->top--;
+}
+void printOrder(struct stack *s)
+{
+    if (s->top == -1) {
+        return;
+    }
+    printf("order of moving:\n");
+    for (int i = 0; i <= s->top; i++) {
+        s->place[i][strcspn(s->place[i], "\n")] = '\0';
+        printf("%d: %s ", i + 1, s->place[i]);
+    }
+    printf("\n");
+}
+
 void draw_board(const char *t)
 {
     const int M = 3, N = 3;
@@ -175,8 +221,11 @@ int get_input(char player)
     char *line = NULL;
     size_t line_length = 0;
 
-    char x = -1, y = -1;
+    char x = -1, y = -1, flag = 0;
     while (x < 0 || x > 2 || y < 0 || y > 2) {
+        if (flag) {
+            pop(s);
+        }
         printf("%c> ", player);
         int r = getline(&line, &line_length, stdin);
         if (r == -1)
@@ -185,6 +234,8 @@ int get_input(char player)
             continue;
         x = tolower(line[0]) - 'a';
         y = tolower(line[1]) - '1';
+        flag = 1;
+        push(s, line);
     }
     return x + 3 * y;
 }
@@ -194,27 +245,33 @@ int main()
     char table[] = {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '};
     char turn = 'X';
     char ai = 'O';
-
+    initStack(&s);
     while (1) {
         char win = check_win(table);
         if (win == 'D') {
+            printOrder(s);
             draw_board(table);
             printf("It is a draw!\n");
             break;
         } else if (win != ' ') {
+            printOrder(s);
             draw_board(table);
             printf("%c won!\n", win);
+            destroyStack(s);
             break;
         }
 
         if (turn == ai) {
             negamax(table, 0, ai, -100000, 100000);
         } else {
+            printOrder(s);
             draw_board(table);
             int move;
-            do {
+            move = get_input(turn);
+            while (table[move] != ' ') {
+                pop(s);
                 move = get_input(turn);
-            } while (table[move] != ' ');
+            };
             table[move] = turn;
         }
         turn = turn == 'X' ? 'O' : 'X';
