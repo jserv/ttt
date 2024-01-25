@@ -186,6 +186,7 @@ int get_input(char player)
         x = tolower(line[0]) - 'a';
         y = tolower(line[1]) - '1';
     }
+    free(line);
     return x + 3 * y;
 }
 
