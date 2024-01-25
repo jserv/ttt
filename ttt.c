@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_MOVES 9 
+#define MAX_MOVES (3 * 3) 
 
 int move_record[MAX_MOVES];
 int move_count = 0; 
