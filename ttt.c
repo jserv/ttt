@@ -9,9 +9,6 @@
 #define GET_COL(x) ((x) % (BOARD_SIZE))
 #define GET_ROW(x) ((x) / (BOARD_SIZE))
 
-#define PLAYER_COLOR "\x1b[34m"
-#define AI_COLOR "\x1b[31m"
-
 enum { ROW, COL, PRIMARY, SECONDARY };
 static int no_step[2] = {0, 0};
 static int step_forward[2] = {1, 2};
@@ -31,10 +28,8 @@ void print_moves()
 {
     printf("Moves: ");
     for (int i = 0; i < move_count; i++) {
-        printf("%s", (i & 1) ? AI_COLOR : PLAYER_COLOR);
         printf("%c%d", 'A' + GET_COL(move_record[i]),
                1 + GET_ROW(move_record[i]));
-        printf("\x1b[39m");
         if (i < move_count - 1) {
             printf(" -> ");
         }
@@ -50,12 +45,12 @@ void draw_board(const char *t)
             printf("\x1b[47m");
             switch (t[GET_INDEX(i, j)]) {
             case 'O':
-                printf(AI_COLOR);
+                printf("\x1b[31m");
                 printf(" ○ ");
                 printf("\x1b[39m");
                 break;
             case 'X':
-                printf(PLAYER_COLOR);
+                printf("\x1b[34m");
                 printf(" × ");
                 printf("\x1b[39m");
                 break;
