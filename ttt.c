@@ -3,18 +3,20 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_MOVES (3 * 3) 
+#define MAX_MOVES (3 * 3)
 
 int move_record[MAX_MOVES];
-int move_count = 0; 
+int move_count = 0;
 
-void record_move(int move) {
+void record_move(int move)
+{
     if (move_count < MAX_MOVES) {
         move_record[move_count++] = move;
     }
 }
 
-void print_moves() {
+void print_moves()
+{
     printf("Moves: ");
     for (int i = 0; i < move_count; i++) {
         int col = move_record[i] % 3;
@@ -185,11 +187,11 @@ int negamax(char *table, int depth, char player, int alpha, int beta)
             break;
     }
 
-    if (depth == 0 && best_move != -1){
+    if (depth == 0 && best_move != -1) {
         table[best_move] = player;
         record_move(best_move);
     }
-    free((char *)moves);
+    free((char *) moves);
     return best_score;
 }
 
