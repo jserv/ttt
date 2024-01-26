@@ -19,9 +19,9 @@ void print_moves() {
     for (int i = 0; i < move_count; i++) {
         int col = move_record[i] % 3;
         int row = move_record[i] / 3;
-        printf("%c%d", 'a' + col, row + 1);
+        printf("%c%d", 'A' + col, row + 1);
         if (i < move_count - 1) {
-            printf(", ");
+            printf(" -> ");
         }
     }
     printf("\n");
