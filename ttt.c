@@ -3,6 +3,30 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MAX_MOVES (3 * 3) 
+
+int move_record[MAX_MOVES];
+int move_count = 0; 
+
+void record_move(int move) {
+    if (move_count < MAX_MOVES) {
+        move_record[move_count++] = move;
+    }
+}
+
+void print_moves() {
+    printf("Moves: ");
+    for (int i = 0; i < move_count; i++) {
+        int col = move_record[i] % 3;
+        int row = move_record[i] / 3;
+        printf("%c%d", 'a' + col, row + 1);
+        if (i < move_count - 1) {
+            printf(", ");
+        }
+    }
+    printf("\n");
+}
+
 void draw_board(const char *t)
 {
     const int M = 3, N = 3;
@@ -146,7 +170,7 @@ int negamax(char *table, int depth, char player, int alpha, int beta)
         return get_score(table, player);
 
     int best_score = -10000;
-    int best_move;
+    int best_move = -1;
     const int *moves = available_moves(table);
     for (int i = 0; i < 9; i++) {
         if (moves[i] == -1)
@@ -165,8 +189,10 @@ int negamax(char *table, int depth, char player, int alpha, int beta)
             break;
     }
 
-    if (depth == 0)
+    if (depth == 0 && best_move != -1){
         table[best_move] = player;
+        record_move(best_move);
+    }
     return best_score;
 }
 
@@ -216,8 +242,10 @@ int main()
                 move = get_input(turn);
             } while (table[move] != ' ');
             table[move] = turn;
+            record_move(move);
         }
         turn = turn == 'X' ? 'O' : 'X';
     }
+    print_moves();
     return 0;
 }
