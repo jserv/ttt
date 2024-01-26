@@ -189,6 +189,7 @@ int negamax(char *table, int depth, char player, int alpha, int beta)
         table[best_move] = player;
         record_move(best_move);
     }
+    free((char *)moves);
     return best_score;
 }
 
