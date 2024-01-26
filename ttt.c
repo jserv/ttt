@@ -65,19 +65,15 @@ void draw_board(const char *t)
 
 char check_win(char *t)
 {
-    if (t[0] != ' ' && t[0] == t[1] && t[1] == t[2])
-        return t[0];
-    if (t[3] != ' ' && t[3] == t[4] && t[4] == t[5])
-        return t[3];
-    if (t[6] != ' ' && t[6] == t[7] && t[7] == t[8])
-        return t[6];
+    for (int i = 0; i < 9; i += 3) {
+        if (t[i] != ' ' && t[i] == t[i + 1] && t[i + 1] == t[i + 2])
+            return t[i];
+    }
 
-    if (t[0] != ' ' && t[0] == t[3] && t[3] == t[6])
-        return t[0];
-    if (t[1] != ' ' && t[1] == t[4] && t[4] == t[7])
-        return t[1];
-    if (t[2] != ' ' && t[2] == t[5] && t[5] == t[8])
-        return t[2];
+    for (int i = 0; i < 3; i++) {
+        if (t[i] != ' ' && t[i] == t[i + 3] && t[i + 3] == t[i + 6])
+            return t[i];
+    }
 
     if (t[0] != ' ' && t[0] == t[4] && t[4] == t[8])
         return t[0];
