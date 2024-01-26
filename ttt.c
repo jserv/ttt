@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MAX_SEARCH_DEPTH 6
 #define BOARD_SIZE 4
 #define N_GRIDS (BOARD_SIZE) * (BOARD_SIZE)
 #define GET_INDEX(i, j) (i) * (BOARD_SIZE) + (j)
@@ -258,6 +259,8 @@ int get_score(const char *table, char player)
 int negamax(char *table, int depth, char player, int alpha, int beta)
 {
     if (check_win(table) != ' ')
+        return get_score(table, player);
+    if (depth == MAX_SEARCH_DEPTH)
         return get_score(table, player);
 
     int best_score = -10000;
