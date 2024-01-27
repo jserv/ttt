@@ -26,9 +26,8 @@ void record_move(int move)
         move_record = realloc(move_record, sizeof(int) * (move_count + BOARD_SIZE));
     }
 
-    if (move_record == NULL) {
+    if (!move_record)
         exit(1);
-    }
     move_record[move_count++] = move;
 }
 
