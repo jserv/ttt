@@ -15,12 +15,19 @@ static int no_step[2] = {0, 0};
 static int step_forward[2] = {1, 2};
 static int step_backward[2] = {-1, -2};
 
-int move_record[N_GRIDS];
-int move_count = 0;
+static int *move_record = NULL;
+static int move_count = 0;
 
 void record_move(int move)
 {
-    if (move_count < N_GRIDS) {
+    if (move_count == 0)
+        move_record = malloc(sizeof(int));
+    else
+        move_record = realloc(move_record, sizeof(int) * (move_count + 1));
+
+    if (move_record == NULL)
+        exit(1);
+    else {
         move_record[move_count++] = move;
     }
 }
@@ -349,6 +356,8 @@ int main()
         turn = turn == 'X' ? 'O' : 'X';
     }
     print_moves();
+    free(move_record);
     free(table);
+
     return 0;
 }
