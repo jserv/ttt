@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+mkdir -p .git/hooks
+
+ln -sf ../../.githooks/pre-commit .git/hooks/pre-commit || exit 1
+chmod +x .git/hooks/pre-commit || exit 1 # fails if dangling symlink
+
+touch .git/hooks/applied || exit 1
