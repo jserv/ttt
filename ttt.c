@@ -20,16 +20,16 @@ static int move_count = 0;
 
 void record_move(int move)
 {
-    if (move_count == 0)
-        move_record = malloc(sizeof(int));
-    else
-        move_record = realloc(move_record, sizeof(int) * (move_count + 1));
-
-    if (move_record == NULL)
-        exit(1);
-    else {
-        move_record[move_count++] = move;
+    if (move_count == 0) {
+        move_record = malloc(sizeof(int) * (5));
+    } else {
+        move_record = realloc(move_record, sizeof(int) * (move_count + BOARD_SIZE));
     }
+
+    if (move_record == NULL) {
+        exit(1);
+    }
+    move_record[move_count++] = move;
 }
 
 void print_moves()
