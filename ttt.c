@@ -15,14 +15,23 @@ static int no_step[2] = {0, 0};
 static int step_forward[2] = {1, 2};
 static int step_backward[2] = {-1, -2};
 
-int move_record[N_GRIDS];
-int move_count = 0;
+static int *move_record = NULL;
+static int move_count = 0;
 
 void record_move(int move)
 {
-    if (move_count < N_GRIDS) {
-        move_record[move_count++] = move;
+    if (move_count == 0) {
+        // minimum of 5 moves is required to determine the winner
+        move_record = malloc(sizeof(int) * (5));
+    } else {
+        // Todo : find a better size to resize move_record
+        move_record =
+            realloc(move_record, sizeof(int) * (move_count + BOARD_SIZE));
     }
+
+    if (!move_record)
+        exit(1);
+    move_record[move_count++] = move;
 }
 
 void print_moves()
@@ -349,6 +358,8 @@ int main()
         turn = turn == 'X' ? 'O' : 'X';
     }
     print_moves();
+    free(move_record);
     free(table);
+
     return 0;
 }
