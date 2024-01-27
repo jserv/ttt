@@ -21,9 +21,12 @@ static int move_count = 0;
 void record_move(int move)
 {
     if (move_count == 0) {
+        // minimum of 5 moves is required to determine the winner
         move_record = malloc(sizeof(int) * (5));
     } else {
-        move_record = realloc(move_record, sizeof(int) * (move_count + BOARD_SIZE));
+        // Todo : find a better size to resize move_record
+        move_record =
+            realloc(move_record, sizeof(int) * (move_count + BOARD_SIZE));
     }
 
     if (!move_record)
