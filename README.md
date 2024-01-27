@@ -24,7 +24,7 @@ Press Ctrl-C to exit.
 ## Game Rules
 The winner is determined by the first player who successfully places three of their marks in a row, whether it be vertically, horizontally, or diagonally, regardless of the board size.
 
-For this two 4x4 board games as examples,
+For these two 4x4 board games as examples,
 
 ```
  1 |  ×  ×
@@ -36,7 +36,7 @@ For this two 4x4 board games as examples,
 >
 ```
 
-The palyer "○" wins the game since he placed his marks in a row vertically (B2-B3-B4).
+The player "○" wins the game since he placed his marks in a row vertically (B2-B3-B4).
 
 ```
  1 |  ×  ×  ○
@@ -48,7 +48,7 @@ The palyer "○" wins the game since he placed his marks in a row vertically (B2
 >
 ```
 
-The palyer "○" wins the game since he placed his marks in a row diagonally (A3-B2-B1).
+The player "○" wins the game since he placed his marks in a row diagonally (A3-B2-B1).
 
 ## Reference
 * [Mastering Tic-Tac-Toe with Minimax Algorithm in Python](https://levelup.gitconnected.com/3394d65fa88f)
