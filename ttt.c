@@ -85,11 +85,17 @@ void draw_board(const char *t)
     }
     if (BOARD_SIZE >= 10)
         printf("-");
+    if (BOARD_SIZE >= 100)
+        printf("-");
     printf("---+-");
     for (int i = 0; i < BOARD_SIZE; i++)
         printf("---");
     printf("\n");
-    printf("     ");
+    if (BOARD_SIZE >= 10)
+        printf(" ");
+    if (BOARD_SIZE >= 100)
+        printf(" ");
+    printf("    ");
     for (int i = 0; i < BOARD_SIZE; i++) {
         // could be more generalized
         if (i < 26)
