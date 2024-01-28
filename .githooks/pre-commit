@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # make sure no format error
-./.ci/check-format.sh
+.ci/check-format.sh
 ret=$?
 
 echo -ne "Code format check: "
