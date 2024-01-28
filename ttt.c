@@ -52,7 +52,7 @@ void draw_board(const char *t)
     for (int i = 0; i < BOARD_SIZE; i++) {
         if (BOARD_SIZE < 10)
             printf("%2d | ", i + 1);
-        else if(BOARD_SIZE >= 10 && BOARD_SIZE < 100)
+        else if (BOARD_SIZE >= 10 && BOARD_SIZE < 100)
             printf("%3d | ", i + 1);
         else
             printf("%4d | ", i + 1);
@@ -83,7 +83,7 @@ void draw_board(const char *t)
         }
         printf("\n");
     }
-    if(BOARD_SIZE >= 10)
+    if (BOARD_SIZE >= 10)
         printf("-");
     printf("---+-");
     for (int i = 0; i < BOARD_SIZE; i++)
@@ -333,17 +333,17 @@ int get_input(char player)
         int r = getline(&line, &line_length, stdin);
         if (r == -1)
             exit(1);
-        if (r < 2) {
+        if (r < 2)
             continue;
-        }
         x = 0;
         y = 0;
         parseX = 1;
         for (int i = 0; i < r - 1; i++) {
             if (isalpha(line[i]) && parseX) {
                 x = x * 26 + (tolower(line[i]) - 'a' + 1);
-                if(x > BOARD_SIZE){
-                    x = BOARD_SIZE + 1; // x could be assigned with any value in [BOARD_SIZE + 1, INT_MAX]
+                if (x > BOARD_SIZE) {
+                    x = BOARD_SIZE + 1;  // x could be assigned with any value
+                                         // in [BOARD_SIZE + 1, INT_MAX]
                     printf("Invalid operation: index exceeds board size\n");
                     break;
                 }
@@ -358,8 +358,9 @@ int get_input(char player)
             parseX = 0;
             if (isdigit(line[i])) {
                 y = y * 10 + line[i] - '0';
-                if(y > BOARD_SIZE){
-                    y = BOARD_SIZE + 1; // y could be assigned with any value in [BOARD_SIZE + 1, INT_MAX]
+                if (y > BOARD_SIZE) {
+                    y = BOARD_SIZE + 1;  // y could be assigned with any value
+                                         // in [BOARD_SIZE + 1, INT_MAX]
                     printf("Invalid operation: index exceeds board size\n");
                     break;
                 }
