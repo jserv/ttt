@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# make sure no format error
+.ci/check-format.sh
+ret=$?
+
+echo -ne "Code format check: "
+if [ $ret -ne 0 ]; then
+    echo -e "\e[31;1mFailed, commit aborted...\e[0m"
+    exit $ret
+else
+    echo -e "\e[36;1mPassed!\e[0m"
+fi
+
+exit 0
