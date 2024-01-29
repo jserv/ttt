@@ -48,7 +48,7 @@ The player "○" wins the game since he placed his marks in a row vertically (B2
 >
 ```
 
-The player "○" wins the game since he placed his marks in a row diagonally (A3-B2-B1).
+The player "○" wins the game since he placed his marks in a row diagonally (A3-B2-C1).
 
 ## Reference
 * [Mastering Tic-Tac-Toe with Minimax Algorithm in Python](https://levelup.gitconnected.com/3394d65fa88f)
