@@ -344,14 +344,14 @@ int get_input(char player)
             if (isalpha(line[i]) && parseX) {
                 x = x * 26 + (tolower(line[i]) - 'a' + 1);
                 if (x > BOARD_SIZE) {
-                    // could be any waleue in [BOARD_SIZE + 1, INT_MAX]
+                    // could be any value in [BOARD_SIZE + 1, INT_MAX]
                     x = BOARD_SIZE + 1;
                     printf("Invalid operation: index exceeds board size\n");
                     break;
                 }
                 continue;
             }
-            // input does not have leading alpabets
+            // input does not have leading alphabets
             if (x == 0) {
                 printf("Invalid operation: No leading alphabet\n");
                 y = 0;
