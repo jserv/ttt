@@ -12,7 +12,7 @@ if [[ $ret -ne 0 ]]; then
     exit $ret
 else
     # make sure version >= 12
-    $CLANG_FORMATER --version | grep -P ".*version (1[2-9]|[2-9]\d+).*" >> /dev/null
+    $CLANG_FORMATER --version | grep -E ".*version (1[2-9]|[2-9]\d+).*" >> /dev/null
     ret=$?
 
     if [[ $ret -ne 0 ]]; then
