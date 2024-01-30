@@ -24,6 +24,9 @@ static const int step_forward[2] = {1, 2}, step_backward[2] = {-1, -2};
 static int *move_record = NULL;
 static int move_count = 0;
 
+static int history_score_sum[N_GRIDS];
+static int history_count[N_GRIDS];
+
 void record_move(int move)
 {
     static int n_move_records = 0;
@@ -180,6 +183,18 @@ char check_win(char *t)
     return 'D';
 }
 
+int cmp_moves(const void *a, const void *b)
+{
+    int *_a = (int *) a, *_b = (int *) b;
+    int score_a = 0, score_b = 0;
+
+    if (history_count[*_a])
+        score_a = history_score_sum[*_a] / history_count[*_a];
+    if (history_count[*_b])
+        score_b = history_score_sum[*_b] / history_count[*_b];
+    return score_b - score_a;
+}
+
 int *available_moves(char *table)
 {
     int *moves = malloc(N_GRIDS * sizeof(int));
@@ -189,6 +204,7 @@ int *available_moves(char *table)
             moves[m++] = i;
     if (m < N_GRIDS)
         moves[m] = -1;
+    qsort(moves, m, sizeof(int), cmp_moves);
     return moves;
 }
 
@@ -296,9 +312,10 @@ int negamax(char *table, int depth, char player, int alpha, int beta)
 {
     if (check_win(table) != ' ')
         return get_score(table, player);
-    if (depth == MAX_SEARCH_DEPTH)
+    if (depth == 0)
         return get_score(table, player);
 
+    int score;
     int best_score = -10000;
     int best_move = -1;
     const int *moves = available_moves(table);
@@ -306,8 +323,19 @@ int negamax(char *table, int depth, char player, int alpha, int beta)
         if (moves[i] == -1)
             break;
         table[moves[i]] = player;
-        int score = -negamax(table, depth + 1, player == 'X' ? 'O' : 'X', -beta,
+        if (!i)  // do a full search on the first move
+            score = -negamax(table, depth - 1, player == 'X' ? 'O' : 'X', -beta,
                              -alpha);
+        else {
+            // do a null-window search on the rest of the moves
+            score = -negamax(table, depth - 1, player == 'X' ? 'O' : 'X',
+                             -alpha - 1, -alpha);
+            if (alpha < score && score < beta)  // do a full re-search
+                score = -negamax(table, depth - 1, player == 'X' ? 'O' : 'X',
+                                 -beta, -score);
+        }
+        history_count[moves[i]]++;
+        history_score_sum[moves[i]] += score;
         if (score > best_score) {
             best_score = score;
             best_move = moves[i];
@@ -319,7 +347,7 @@ int negamax(char *table, int depth, char player, int alpha, int beta)
             break;
     }
 
-    if (depth == 0 && best_move != -1) {
+    if (depth == MAX_SEARCH_DEPTH && best_move != -1) {
         table[best_move] = player;
         record_move(best_move);
     }
@@ -348,14 +376,14 @@ int get_input(char player)
             if (isalpha(line[i]) && parseX) {
                 x = x * 26 + (tolower(line[i]) - 'a' + 1);
                 if (x > BOARD_SIZE) {
-                    // could be any waleue in [BOARD_SIZE + 1, INT_MAX]
+                    // could be any value in [BOARD_SIZE + 1, INT_MAX]
                     x = BOARD_SIZE + 1;
                     printf("Invalid operation: index exceeds board size\n");
                     break;
                 }
                 continue;
             }
-            // input does not have leading alpabets
+            // input does not have leading alphabets
             if (x == 0) {
                 printf("Invalid operation: No leading alphabet\n");
                 y = 0;
@@ -408,7 +436,10 @@ int main()
         }
 
         if (turn == ai) {
-            negamax(table, 0, ai, -100000, 100000);
+            memset(history_score_sum, 0, sizeof(history_score_sum));
+            memset(history_count, 0, sizeof(history_count));
+            for (int depth = 2; depth <= MAX_SEARCH_DEPTH; depth += 2)
+                negamax(table, depth, ai, -100000, 100000);
         } else {
             draw_board(table);
             int move;
