@@ -311,6 +311,7 @@ int negamax(char *table, int depth, char player, int alpha, int beta)
     if (depth == 0)
         return get_score(table, player);
 
+    int score;
     int best_score = -10000;
     int best_move = -1;
     const int *moves = available_moves(table);
@@ -318,8 +319,17 @@ int negamax(char *table, int depth, char player, int alpha, int beta)
         if (moves[i] == -1)
             break;
         table[moves[i]] = player;
-        int score = -negamax(table, depth - 1, player == 'X' ? 'O' : 'X', -beta,
+        if (!i)  // do a full search on the first move
+            score = -negamax(table, depth - 1, player == 'X' ? 'O' : 'X', -beta,
                              -alpha);
+        else {
+            // do a null-window search on the rest of the moves
+            score = -negamax(table, depth - 1, player == 'X' ? 'O' : 'X',
+                             -alpha - 1, -alpha);
+            if (alpha < score && score < beta)  // do a full re-search
+                score = -negamax(table, depth - 1, player == 'X' ? 'O' : 'X',
+                                 -beta, -score);
+        }
         history_count[moves[i]]++;
         history_score_sum[moves[i]] += score;
         if (score > best_score) {
