@@ -292,7 +292,7 @@ int negamax(char *table, int depth, char player, int alpha, int beta)
 {
     if (check_win(table) != ' ')
         return get_score(table, player);
-    if (depth == MAX_SEARCH_DEPTH)
+    if (depth == 0)
         return get_score(table, player);
 
     int best_score = -10000;
@@ -302,7 +302,7 @@ int negamax(char *table, int depth, char player, int alpha, int beta)
         if (moves[i] == -1)
             break;
         table[moves[i]] = player;
-        int score = -negamax(table, depth + 1, player == 'X' ? 'O' : 'X', -beta,
+        int score = -negamax(table, depth - 1, player == 'X' ? 'O' : 'X', -beta,
                              -alpha);
         if (score > best_score) {
             best_score = score;
@@ -315,7 +315,7 @@ int negamax(char *table, int depth, char player, int alpha, int beta)
             break;
     }
 
-    if (depth == 0 && best_move != -1) {
+    if (depth == MAX_SEARCH_DEPTH && best_move != -1) {
         table[best_move] = player;
         record_move(best_move);
     }
@@ -404,7 +404,7 @@ int main()
         }
 
         if (turn == ai) {
-            negamax(table, 0, ai, -100000, 100000);
+            negamax(table, MAX_SEARCH_DEPTH, ai, -100000, 100000);
         } else {
             draw_board(table);
             int move;
