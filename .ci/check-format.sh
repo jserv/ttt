@@ -21,13 +21,12 @@ else
     fi
 fi
 
-# check format (based on sysprog21/lab0-c/.ci/check-format.sh)
-
-SOURCES=$(find $(git rev-parse --show-toplevel) | egrep "\.(c|h)\$")
+# check format
+SOURCES=$(find $(git rev-parse --show-toplevel) | grep -E "\.(c|h)\$")
 
 for file in ${SOURCES};
 do
     $CLANG_FORMATER $CLANG_FORMATER_FLAGS ${file} > expected-format
     diff -u -p --label="${file}" --label="expected coding style" ${file} expected-format
 done
-exit $($CLANG_FORMATER --output-replacements-xml ${SOURCES} | egrep -c "</replacement>")
+exit $($CLANG_FORMATER --output-replacements-xml ${SOURCES} | grep -E -c "</replacement>")
