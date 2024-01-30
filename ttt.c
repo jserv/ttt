@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,25 +11,26 @@
 #define GET_COL(x) ((x) % (BOARD_SIZE))
 #define GET_ROW(x) ((x) / (BOARD_SIZE))
 
+_Static_assert(BOARD_SIZE < 26, "Board size must be less than 26");
+
 enum { ROW, COL, PRIMARY, SECONDARY };
 static int no_step[2] = {0, 0};
-static int step_forward[2] = {1, 2};
-static int step_backward[2] = {-1, -2};
+static const int step_forward[2] = {1, 2}, step_backward[2] = {-1, -2};
 
 static int *move_record = NULL;
-static int move_record_len = 0;
 static int move_count = 0;
 
 void record_move(int move)
 {
+    static int n_move_records = 0;
     if (move_count == 0) {
         // minimum of 5 moves is required to determine the winner
-        move_record_len = 5;
+        n_move_records = 5;
         move_record = malloc(sizeof(int) * (5));
-    } else if (move_count == move_record_len) {
-        // Todo : find a better size to resize move_record
-        move_record_len = move_count + BOARD_SIZE;
-        move_record = realloc(move_record, sizeof(int) * move_record_len);
+    } else if (move_count == n_move_records) {
+        // TODO: find a better size to resize move_record
+        n_move_records = move_count + BOARD_SIZE;
+        move_record = realloc(move_record, sizeof(int) * n_move_records);
     }
 
     if (!move_record)
@@ -98,16 +100,8 @@ void draw_board(const char *t)
     if (BOARD_SIZE >= 100)
         printf(" ");
     printf("    ");
-    for (int i = 0; i < BOARD_SIZE; i++) {
-        // could be more generalized
-        if (i < 26)
-            printf(" %2c", 'A' + i);
-        else {
-            int k = i / 26 - 1;
-            printf(" %c", 'A' + k);
-            printf("%c", 'A' + i % 26);
-        }
-    }
+    for (int i = 0; i < BOARD_SIZE; i++)
+        printf(" %2c", 'A' + i);
     printf("\n");
 }
 
@@ -346,12 +340,12 @@ int get_input(char player)
         x = 0;
         y = 0;
         parseX = 1;
-        for (int i = 0; i < r - 1; i++) {
+        for (int i = 0; i < (r - 1); i++) {
             if (isalpha(line[i]) && parseX) {
                 x = x * 26 + (tolower(line[i]) - 'a' + 1);
                 if (x > BOARD_SIZE) {
-                    x = BOARD_SIZE + 1;  // x could be assigned with any value
-                                         // in [BOARD_SIZE + 1, INT_MAX]
+                    // could be any waleue in [BOARD_SIZE + 1, INT_MAX]
+                    x = BOARD_SIZE + 1;
                     printf("Invalid operation: index exceeds board size\n");
                     break;
                 }
@@ -367,22 +361,19 @@ int get_input(char player)
             if (isdigit(line[i])) {
                 y = y * 10 + line[i] - '0';
                 if (y > BOARD_SIZE) {
-                    y = BOARD_SIZE + 1;  // y could be assigned with any value
-                                         // in [BOARD_SIZE + 1, INT_MAX]
+                    // could be any value in [BOARD_SIZE + 1, INT_MAX]
+                    y = BOARD_SIZE + 1;
                     printf("Invalid operation: index exceeds board size\n");
                     break;
                 }
                 continue;
             }
-            // any other char is invalid
+            // any other character is invalid
             // ant non-digit char during digit parsing is invalid
             // TODO: Error message could be better by separating these two cases
-            if (i < r - 1) {
-                printf("invalid operation\n");
-                x = 0;
-                y = 0;
-                break;
-            }
+            printf("invalid operation\n");
+            x = y = 0;
+            break;
         }
         x -= 1;
         y -= 1;

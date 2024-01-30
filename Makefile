@@ -1,5 +1,5 @@
 PROG = ttt
-CFLAGS = -Wall -Wextra
+CFLAGS = -Wall -Wextra -std=c11
 
 GIT_HOOKS := .git/hooks/applied
 
