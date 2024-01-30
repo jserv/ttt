@@ -20,6 +20,9 @@ static const int step_forward[2] = {1, 2}, step_backward[2] = {-1, -2};
 static int *move_record = NULL;
 static int move_count = 0;
 
+static int history_score_sum[N_GRIDS];
+static int history_count[N_GRIDS];
+
 void record_move(int move)
 {
     static int n_move_records = 0;
@@ -176,6 +179,18 @@ char check_win(char *t)
     return 'D';
 }
 
+int cmp_moves(const void *a, const void *b)
+{
+    int *_a = (int *) a, *_b = (int *) b;
+    int score_a = 0, score_b = 0;
+
+    if (history_count[*_a])
+        score_a = history_score_sum[*_a] / history_count[*_a];
+    if (history_count[*_b])
+        score_b = history_score_sum[*_b] / history_count[*_b];
+    return score_b - score_a;
+}
+
 int *available_moves(char *table)
 {
     int *moves = malloc(N_GRIDS * sizeof(int));
@@ -185,6 +200,7 @@ int *available_moves(char *table)
             moves[m++] = i;
     if (m < N_GRIDS)
         moves[m] = -1;
+    qsort(moves, m, sizeof(int), cmp_moves);
     return moves;
 }
 
@@ -304,6 +320,8 @@ int negamax(char *table, int depth, char player, int alpha, int beta)
         table[moves[i]] = player;
         int score = -negamax(table, depth - 1, player == 'X' ? 'O' : 'X', -beta,
                              -alpha);
+        history_count[moves[i]]++;
+        history_score_sum[moves[i]] += score;
         if (score > best_score) {
             best_score = score;
             best_move = moves[i];
@@ -404,6 +422,8 @@ int main()
         }
 
         if (turn == ai) {
+            memset(history_score_sum, 0, sizeof(history_score_sum));
+            memset(history_count, 0, sizeof(history_count));
             negamax(table, MAX_SEARCH_DEPTH, ai, -100000, 100000);
         } else {
             draw_board(table);
