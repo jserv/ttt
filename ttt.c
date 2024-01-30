@@ -424,7 +424,8 @@ int main()
         if (turn == ai) {
             memset(history_score_sum, 0, sizeof(history_score_sum));
             memset(history_count, 0, sizeof(history_count));
-            negamax(table, MAX_SEARCH_DEPTH, ai, -100000, 100000);
+            for (int depth = 2; depth <= MAX_SEARCH_DEPTH; depth += 2)
+                negamax(table, depth, ai, -100000, 100000);
         } else {
             draw_board(table);
             int move;
