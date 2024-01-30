@@ -16,17 +16,19 @@ static int step_forward[2] = {1, 2};
 static int step_backward[2] = {-1, -2};
 
 static int *move_record = NULL;
+static int move_record_len = 0;
 static int move_count = 0;
 
 void record_move(int move)
 {
     if (move_count == 0) {
         // minimum of 5 moves is required to determine the winner
+        move_record_len = 5;
         move_record = malloc(sizeof(int) * (5));
-    } else {
+    } else if (move_count == move_record_len) {
         // Todo : find a better size to resize move_record
-        move_record =
-            realloc(move_record, sizeof(int) * (move_count + BOARD_SIZE));
+        move_record_len = move_count + BOARD_SIZE;
+        move_record = realloc(move_record, sizeof(int) * move_record_len);
     }
 
     if (!move_record)
