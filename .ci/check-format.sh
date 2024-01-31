@@ -22,7 +22,7 @@ else
 fi
 
 # check format
-SOURCES=$(find $(git rev-parse --show-toplevel) | grep -E "\.(c|h)\$")
+SOURCES=$(find $(git rev-parse --show-toplevel) -name '*.c' -o -name '*.h')
 
 for file in ${SOURCES};
 do
