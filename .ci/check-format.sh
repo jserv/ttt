@@ -29,4 +29,5 @@ do
     $CLANG_FORMATER $CLANG_FORMATER_FLAGS ${file} > expected-format
     diff -u -p --label="${file}" --label="expected coding style" ${file} expected-format
 done
+rm expected-format
 exit $($CLANG_FORMATER --output-replacements-xml ${SOURCES} | grep -E -c "</replacement>")
