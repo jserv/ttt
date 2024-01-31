@@ -12,7 +12,7 @@ if [[ $ret -ne 0 ]]; then
     exit $ret
 else
     # make sure version >= 12
-    $CLANG_FORMATER --version | grep -E ".*version (1[2-9]|[2-9]\d+).*" >> /dev/null
+    $CLANG_FORMATER --version | grep -E ".*version (1[2-9]|[2-9][0-9]+).*" >> /dev/null
     ret=$?
 
     if [[ $ret -ne 0 ]]; then
@@ -22,11 +22,12 @@ else
 fi
 
 # check format
-SOURCES=$(find $(git rev-parse --show-toplevel) | grep -E "\.(c|h)\$")
+SOURCES=$(find $(git rev-parse --show-toplevel) -name '*.c' -o -name '*.h')
 
 for file in ${SOURCES};
 do
     $CLANG_FORMATER $CLANG_FORMATER_FLAGS ${file} > expected-format
     diff -u -p --label="${file}" --label="expected coding style" ${file} expected-format
 done
+rm expected-format
 exit $($CLANG_FORMATER --output-replacements-xml ${SOURCES} | grep -E -c "</replacement>")
