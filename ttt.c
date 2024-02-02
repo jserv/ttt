@@ -401,9 +401,9 @@ int get_input(char player)
                 continue;
             }
             // any other character is invalid
-            // ant non-digit char during digit parsing is invalid
+            // any non-digit char during digit parsing is invalid
             // TODO: Error message could be better by separating these two cases
-            printf("invalid operation\n");
+            printf("Invalid operation\n");
             x = y = 0;
             break;
         }
@@ -443,9 +443,13 @@ int main()
         } else {
             draw_board(table);
             int move;
-            do {
+            while (1) {
                 move = get_input(turn);
-            } while (table[move] != ' ');
+                if (table[move] == ' ') {
+                    break;
+                }
+                printf("Invalid operation: the position has been marked\n");
+            }
             table[move] = turn;
             record_move(move);
         }
