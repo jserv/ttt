@@ -7,8 +7,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "agents/negamax.h"
 #include "game.h"
+#ifdef USE_TD
+#include "agents/temporal_difference.h"
+#else
+#include "agents/negamax.h"
+#endif
 
 static int move_record[N_GRIDS];
 static int move_count = 0;
@@ -28,60 +32,6 @@ static void print_moves()
             printf(" -> ");
         }
     }
-    printf("\n");
-}
-
-static void draw_board(const char *t)
-{
-    for (int i = 0; i < BOARD_SIZE; i++) {
-        if (BOARD_SIZE < 10)
-            printf("%2d | ", i + 1);
-        else if (BOARD_SIZE >= 10 && BOARD_SIZE < 100)
-            printf("%3d | ", i + 1);
-        else
-            printf("%4d | ", i + 1);
-
-        for (int j = 0; j < BOARD_SIZE; j++) {
-            // make background color alter between high-intensity and standard
-            if ((i + j) & 1U)
-                printf("\x1b[47m");
-            else
-                printf("\x1b[107m");
-
-            switch (t[GET_INDEX(i, j)]) {
-            case 'O':
-                printf("\x1b[31m");
-                printf(" ○ ");
-                printf("\x1b[39m");
-                break;
-            case 'X':
-                printf("\x1b[34m");
-                printf(" × ");
-                printf("\x1b[39m");
-                break;
-            default:
-                printf("   ");
-                break;
-            }
-            printf("\x1b[49m");
-        }
-        printf("\n");
-    }
-    if (BOARD_SIZE >= 10)
-        printf("-");
-    if (BOARD_SIZE >= 100)
-        printf("-");
-    printf("---+-");
-    for (int i = 0; i < BOARD_SIZE; i++)
-        printf("---");
-    printf("\n");
-    if (BOARD_SIZE >= 10)
-        printf(" ");
-    if (BOARD_SIZE >= 100)
-        printf(" ");
-    printf("    ");
-    for (int i = 0; i < BOARD_SIZE; i++)
-        printf(" %2c", 'A' + i);
     printf("\n");
 }
 
@@ -151,8 +101,15 @@ int main()
     char turn = 'X';
     char ai = 'O';
 
+#ifdef USE_TD
+    td_agent_t agent;
+    unsigned int state_num = 1;
+    CALC_STATE_NUM(state_num);
+    init_td_agent(&agent, state_num, 'O');
+    load_model(&agent, state_num, MODEL_NAME);
+#else
     negamax_init();
-
+#endif
     while (1) {
         char win = check_win(table);
         if (win == 'D') {
@@ -166,11 +123,16 @@ int main()
         }
 
         if (turn == ai) {
+#ifdef USE_TD
+            int move = play_td(table, &agent);
+            record_move(move);
+#else
             int move = negamax_predict(table, ai).move;
             if (move != -1) {
                 table[move] = ai;
                 record_move(move);
             }
+#endif
         } else {
             draw_board(table);
             int move;

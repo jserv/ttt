@@ -1,3 +1,6 @@
 *.o
 *.d
 ttt
+train
+*.bin
+td
