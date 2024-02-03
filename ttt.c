@@ -10,6 +10,7 @@
 
 #define MAX_SEARCH_DEPTH 6
 #define BOARD_SIZE 4
+#define GOAL 3
 #define N_GRIDS (BOARD_SIZE) * (BOARD_SIZE)
 #define GET_INDEX(i, j) (i) * (BOARD_SIZE) + (j)
 #define GET_COL(x) ((x) % (BOARD_SIZE))
@@ -17,9 +18,16 @@
 
 _Static_assert(BOARD_SIZE < 26, "Board size must be less than 26");
 
-enum { ROW, COL, PRIMARY, SECONDARY };
-static int no_step[2] = {0, 0};
-static const int step_forward[2] = {1, 2}, step_backward[2] = {-1, -2};
+typedef struct {
+    int i_shift, j_shift;
+    int i_lower_bound, j_lower_bound, i_upper_bound, j_upper_bound;
+} line_t;
+static line_t lines[4] = {
+    {1, 0, 0, 0, BOARD_SIZE - GOAL + 1, BOARD_SIZE},             // ROW
+    {0, 1, 0, 0, BOARD_SIZE, BOARD_SIZE - GOAL + 1},             // COL
+    {1, 1, 0, 0, BOARD_SIZE - GOAL + 1, BOARD_SIZE - GOAL + 1},  // PRIMARY
+    {1, -1, 0, GOAL - 1, BOARD_SIZE - GOAL + 1, BOARD_SIZE},     // SECONDARY
+};
 
 static int *move_record = NULL;
 static int move_count = 0;
@@ -112,71 +120,31 @@ void draw_board(const char *t)
     printf("\n");
 }
 
-char check_row_col(const char *t, int flag)
+char check_line_segment_win(const char *t, int i, int j, line_t line)
 {
-    int i_shift[2], j_shift[2];
-    if (flag == ROW) {
-        memcpy(i_shift, no_step, sizeof(i_shift));
-        memcpy(j_shift, step_forward, sizeof(j_shift));
-    } else if (flag == COL) {
-        memcpy(i_shift, step_forward, sizeof(i_shift));
-        memcpy(j_shift, no_step, sizeof(j_shift));
-    }
-    for (int i = 0; i < BOARD_SIZE - i_shift[1]; i++) {
-        for (int j = 0; j < BOARD_SIZE - j_shift[1]; j++) {
-            if (t[GET_INDEX(i, j)] != ' ' &&
-                t[GET_INDEX(i, j)] ==
-                    t[GET_INDEX(i + i_shift[0], j + j_shift[0])] &&
-                t[GET_INDEX(i + i_shift[0], j + j_shift[0])] ==
-                    t[GET_INDEX(i + i_shift[1], j + j_shift[1])]) {
-                return t[GET_INDEX(i, j)];
-            }
+    char last = t[GET_INDEX(i, j)];
+    if (last == ' ')
+        return ' ';
+    for (int k = 1; k < GOAL; k++) {
+        if (last != t[GET_INDEX(i + k * line.i_shift, j + k * line.j_shift)]) {
+            return ' ';
         }
     }
-    return ' ';
-}
-
-char check_diagonal(const char *t, int flag)
-{
-    int i_shift[2], j_shift[2];
-    if (flag == PRIMARY) {
-        memcpy(i_shift, step_forward, sizeof(i_shift));
-        memcpy(j_shift, step_forward, sizeof(j_shift));
-    } else if (flag == SECONDARY) {
-        memcpy(i_shift, step_backward, sizeof(i_shift));
-        memcpy(j_shift, step_forward, sizeof(j_shift));
-    }
-    for (int i = 0; i < BOARD_SIZE; i++) {
-        for (int j = 0; j < BOARD_SIZE; j++) {
-            if (i + i_shift[1] < 0 || i + i_shift[1] >= BOARD_SIZE ||
-                j + j_shift[1] < 0 || j + j_shift[1] >= BOARD_SIZE)
-                continue;
-            if (t[GET_INDEX(i, j)] != ' ' &&
-                t[GET_INDEX(i, j)] ==
-                    t[GET_INDEX(i + i_shift[0], j + j_shift[0])] &&
-                t[GET_INDEX(i + i_shift[0], j + j_shift[0])] ==
-                    t[GET_INDEX(i + i_shift[1], j + j_shift[1])]) {
-                return t[GET_INDEX(i, j)];
-            }
-        }
-    }
-    return ' ';
+    return last;
 }
 
 char check_win(char *t)
 {
-    char r = check_row_col(t, ROW);
-    if (r != ' ')
-        return r;
-    char c = check_row_col(t, COL);
-    if (c != ' ')
-        return c;
-    char md = check_diagonal(t, PRIMARY);
-    if (md != ' ')
-        return md;
-    char bd = check_diagonal(t, SECONDARY);
-    if (bd != ' ')
-        return bd;
+    for (int i_line = 0; i_line < 4; ++i_line) {
+        line_t line = lines[i_line];
+        for (int i = line.i_lower_bound; i < line.i_upper_bound; ++i) {
+            for (int j = line.j_lower_bound; j < line.j_upper_bound; ++j) {
+                char win = check_line_segment_win(t, i, j, line);
+                if (win != ' ')
+                    return win;
+            }
+        }
+    }
     for (int i = 0; i < N_GRIDS; i++)
         if (t[i] == ' ')
             return ' ';
@@ -208,90 +176,34 @@ int *available_moves(char *table)
     return moves;
 }
 
-int eval_line_score(const char *table, char player, int a, int b, int c)
+int eval_line_segment_score(const char *table,
+                            char player,
+                            int i,
+                            int j,
+                            line_t line)
 {
     int score = 0;
-
-    if (table[a] == player)
-        score = 1;
-    else if (table[a] != ' ')
-        score = -1;
-
-    if (table[b] == player) {
-        if (score == -1)
-            return 0;
-        if (score == 1)
-            score = 10;
-        else
-            score = 1;
-    } else if (table[b] != ' ') {
-        if (score == 1)
-            return 0;
-        if (score == -1)
-            score = -10;
-        else
-            score = -1;
-    }
-
-    if (table[c] == player) {
-        if (score < 0)
-            return 0;
-        if (score > 0)
-            score *= 10;
-        else
-            score = 1;
-    } else if (table[c] != ' ') {
-        if (score > 0)
-            return 0;
-        if (score < 0)
-            score *= 10;
-        else
-            score = -1;
-    }
-
-    return score;
-}
-
-int get_row_col_score(const char *table, char player, int flag)
-{
-    int i_shift[2], j_shift[2];
-    if (flag == ROW) {
-        memcpy(i_shift, no_step, sizeof(i_shift));
-        memcpy(j_shift, step_forward, sizeof(j_shift));
-    } else if (flag == COL) {
-        memcpy(i_shift, step_forward, sizeof(i_shift));
-        memcpy(j_shift, no_step, sizeof(j_shift));
-    }
-    int score = 0;
-    for (int i = 0; i < BOARD_SIZE - i_shift[1]; i++) {
-        for (int j = 0; j < BOARD_SIZE - j_shift[1]; j++) {
-            score += eval_line_score(table, player, GET_INDEX(i, j),
-                                     GET_INDEX(i + i_shift[0], j + j_shift[0]),
-                                     GET_INDEX(i + i_shift[1], j + j_shift[1]));
-        }
-    }
-    return score;
-}
-
-int get_diagonal_score(const char *table, char player, int flag)
-{
-    int i_shift[2], j_shift[2];
-    int score = 0;
-    if (flag == PRIMARY) {
-        memcpy(i_shift, step_forward, sizeof(i_shift));
-        memcpy(j_shift, step_forward, sizeof(j_shift));
-    } else if (flag == SECONDARY) {
-        memcpy(i_shift, step_backward, sizeof(i_shift));
-        memcpy(j_shift, step_forward, sizeof(j_shift));
-    }
-    for (int i = 0; i < BOARD_SIZE; i++) {
-        for (int j = 0; j < BOARD_SIZE; j++) {
-            if (i + i_shift[1] < 0 || i + i_shift[1] >= BOARD_SIZE ||
-                j + j_shift[1] < 0 || j + j_shift[1] >= BOARD_SIZE)
-                continue;
-            score += eval_line_score(table, player, GET_INDEX(i, j),
-                                     GET_INDEX(i + i_shift[0], j + j_shift[0]),
-                                     GET_INDEX(i + i_shift[1], j + j_shift[1]));
+    for (int k = 0; k < GOAL; k++) {
+        char curr =
+            table[GET_INDEX(i + k * line.i_shift, j + k * line.j_shift)];
+        if (curr == player) {
+            if (score == -1) {
+                score = 0;
+                break;
+            }
+            if (score)
+                score *= 10;
+            else
+                score = 1;
+        } else if (curr != ' ') {
+            if (score == 1) {
+                score = 0;
+                break;
+            }
+            if (score)
+                score *= 10;
+            else
+                score = -1;
         }
     }
     return score;
@@ -300,11 +212,14 @@ int get_diagonal_score(const char *table, char player, int flag)
 int get_score(const char *table, char player)
 {
     int score = 0;
-    score += get_row_col_score(table, player, ROW);
-    score += get_row_col_score(table, player, COL);
-
-    score += get_diagonal_score(table, player, PRIMARY);
-    score += get_diagonal_score(table, player, SECONDARY);
+    for (int i_line = 0; i_line < 4; ++i_line) {
+        line_t line = lines[i_line];
+        for (int i = line.i_lower_bound; i < line.i_upper_bound; ++i) {
+            for (int j = line.j_lower_bound; j < line.j_upper_bound; ++j) {
+                score += eval_line_segment_score(table, player, i, j, line);
+            }
+        }
+    }
     return score;
 }
 
