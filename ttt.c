@@ -11,12 +11,23 @@
 #define MAX_SEARCH_DEPTH 6
 #define BOARD_SIZE 4
 #define GOAL 3
-#define N_GRIDS (BOARD_SIZE) * (BOARD_SIZE)
-#define GET_INDEX(i, j) (i) * (BOARD_SIZE) + (j)
+#define ALLOW_EXCEED 1
+#define N_GRIDS ((BOARD_SIZE) * (BOARD_SIZE))
+#define GET_INDEX(i, j) ((i) * (BOARD_SIZE) + (j))
 #define GET_COL(x) ((x) % (BOARD_SIZE))
 #define GET_ROW(x) ((x) / (BOARD_SIZE))
+#define LOOKUP(table, i, j, else_value)                             \
+    ((i) < 0 || (j) < 0 || (i) > (BOARD_SIZE) || (j) > (BOARD_SIZE) \
+         ? (else_value)                                             \
+         : (table)[GET_INDEX(i, j)])
 
-_Static_assert(BOARD_SIZE < 26, "Board size must be less than 26");
+_Static_assert((BOARD_SIZE) <= 26, "Board size must not be greater than 26");
+_Static_assert((BOARD_SIZE) > 0, "Board size must be greater than 0");
+_Static_assert((GOAL) <= (BOARD_SIZE),
+               "Goal must not be greater than board size");
+_Static_assert((GOAL) > 0, "Goal must be greater than 0");
+_Static_assert((ALLOW_EXCEED) == 0 || (ALLOW_EXCEED) == 1,
+               "ALLOW_EXCEED must be a boolean that is 0 or 1");
 
 typedef struct {
     int i_shift, j_shift;
@@ -130,6 +141,12 @@ char check_line_segment_win(const char *t, int i, int j, line_t line)
             return ' ';
         }
     }
+#if !(ALLOW_EXCEED)
+    if (last == LOOKUP(t, i - line.i_shift, j - line.j_shift, ' ') ||
+        last ==
+            LOOKUP(t, i + GOAL * line.i_shift, j + GOAL * line.j_shift, ' '))
+        return ' ';
+#endif
     return last;
 }
 
