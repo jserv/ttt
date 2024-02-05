@@ -22,9 +22,9 @@ To execute a move, enter `[column][row]`. For example:
 Press Ctrl-C to exit.
 
 ## Game Rules
-The winner is determined by the first player who successfully places three of their marks in a row, whether it be vertically, horizontally, or diagonally, regardless of the board size.
+The winner is determined by the first player who successfully places `GOAL` of their marks in a row, whether it is vertically, horizontally, or diagonally, regardless of the board size.
 
-For these two 4x4 board games as examples,
+Using the following 4x4 board games, whose `GOAL` is 3, as examples:
 
 ```
  1 |  ×  ×
@@ -49,6 +49,18 @@ The player "○" wins the game since he placed his marks in a row vertically (B2
 ```
 
 The player "○" wins the game since he placed his marks in a row diagonally (A3-B2-C1).
+
+```
+ 1 |  o  x  
+ 2 |  o  x  
+ 3 |  o     x
+ 4 |  o  x
+---+------------
+      A  B  C  D
+>
+```
+
+The player "○" wins the game if `ALLOW_EXCEED` is `1`; otherwise, the game will continue because the number of "○"s in a row exceeds `GOAL`.
 
 ## Reference
 * [Mastering Tic-Tac-Toe with Minimax Algorithm in Python](https://levelup.gitconnected.com/3394d65fa88f)
