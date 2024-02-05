@@ -12,21 +12,20 @@
 #define BOARD_SIZE 4
 #define GOAL 3
 #define ALLOW_EXCEED 1
-#define N_GRIDS ((BOARD_SIZE) * (BOARD_SIZE))
+#define N_GRIDS (BOARD_SIZE * BOARD_SIZE)
 #define GET_INDEX(i, j) ((i) * (BOARD_SIZE) + (j))
-#define GET_COL(x) ((x) % (BOARD_SIZE))
-#define GET_ROW(x) ((x) / (BOARD_SIZE))
-#define LOOKUP(table, i, j, else_value)                             \
-    ((i) < 0 || (j) < 0 || (i) > (BOARD_SIZE) || (j) > (BOARD_SIZE) \
-         ? (else_value)                                             \
+#define GET_COL(x) ((x) % BOARD_SIZE)
+#define GET_ROW(x) ((x) / BOARD_SIZE)
+#define LOOKUP(table, i, j, else_value)                         \
+    ((i) < 0 || (j) < 0 || (i) > BOARD_SIZE || (j) > BOARD_SIZE \
+         ? (else_value)                                         \
          : (table)[GET_INDEX(i, j)])
 
-_Static_assert((BOARD_SIZE) <= 26, "Board size must not be greater than 26");
-_Static_assert((BOARD_SIZE) > 0, "Board size must be greater than 0");
-_Static_assert((GOAL) <= (BOARD_SIZE),
-               "Goal must not be greater than board size");
-_Static_assert((GOAL) > 0, "Goal must be greater than 0");
-_Static_assert((ALLOW_EXCEED) == 0 || (ALLOW_EXCEED) == 1,
+_Static_assert(BOARD_SIZE <= 26, "Board size must not be greater than 26");
+_Static_assert(BOARD_SIZE > 0, "Board size must be greater than 0");
+_Static_assert(GOAL <= BOARD_SIZE, "Goal must not be greater than board size");
+_Static_assert(GOAL > 0, "Goal must be greater than 0");
+_Static_assert(ALLOW_EXCEED == 0 || ALLOW_EXCEED == 1,
                "ALLOW_EXCEED must be a boolean that is 0 or 1");
 
 typedef struct {
