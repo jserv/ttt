@@ -4,6 +4,7 @@
 
 #include <assert.h>
 #include <ctype.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -192,6 +193,16 @@ int *available_moves(char *table)
     return moves;
 }
 
+bool is_consecutive(int score, int x)
+{
+    for (int i = 0; i < GOAL - 1; i++) {
+        if (score == x)
+            return true;
+        x *= 10;
+    }
+    return false;
+}
+
 int eval_line_segment_score(const char *table,
                             char player,
                             int i,
@@ -203,7 +214,7 @@ int eval_line_segment_score(const char *table,
         char curr =
             table[GET_INDEX(i + k * line.i_shift, j + k * line.j_shift)];
         if (curr == player) {
-            if (score == -1) {
+            if (is_consecutive(score, -1)) {
                 score = 0;
                 break;
             }
@@ -212,7 +223,7 @@ int eval_line_segment_score(const char *table,
             else
                 score = 1;
         } else if (curr != ' ') {
-            if (score == 1) {
+            if (is_consecutive(score, 1)) {
                 score = 0;
                 break;
             }
