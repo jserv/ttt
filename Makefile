@@ -1,6 +1,7 @@
 PROG = ttt
 CFLAGS := -Wall -Wextra -std=c11
-CFLAGS += -I.
+CFLAGS += -I. -MMD
+LDFLAGS :=
 
 GIT_HOOKS := .git/hooks/applied
 
@@ -14,8 +15,10 @@ OBJS := \
 	game.o \
 	agents/negamax.o \
 	main.o
+deps := $(OBJS:%.o=%.d)
 
 $(PROG): $(OBJS)
+	$(CC) -o $@ $^ $(LDFLAGS)
 
 clean:
-	-$(RM) $(PROG) $(OBJS)
+	-$(RM) $(PROG) $(OBJS) $(deps)
