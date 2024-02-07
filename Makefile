@@ -1,5 +1,6 @@
 PROG = ttt
-CFLAGS = -Wall -Wextra -std=c11 -I .
+CFLAGS := -Wall -Wextra -std=c11
+CFLAGS += -I.
 
 GIT_HOOKS := .git/hooks/applied
 
@@ -9,8 +10,12 @@ $(GIT_HOOKS):
 	@scripts/install-git-hooks
 	@echo
 
-$(PROG): $(PROG).c game.c agents/negamax.c
-	gcc $(CFLAGS) -o $@ $^
+OBJS := \
+	game.o \
+	agents/negamax.o \
+	main.o
+
+$(PROG): $(OBJS)
 
 clean:
-	-$(RM) $(PROG)
+	-$(RM) $(PROG) $(OBJS)
