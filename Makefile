@@ -1,5 +1,5 @@
 PROG = ttt
-CFLAGS = -Wall -Wextra -std=c11
+CFLAGS = -Wall -Wextra -std=c11 -I .
 
 GIT_HOOKS := .git/hooks/applied
 
@@ -9,7 +9,7 @@ $(GIT_HOOKS):
 	@scripts/install-git-hooks
 	@echo
 
-$(PROG): $(PROG).c
+$(PROG): $(PROG).c game.c agents/negamax.c
 	gcc $(CFLAGS) -o $@ $^
 
 clean:
