@@ -151,6 +151,8 @@ int main()
     char turn = 'X';
     char ai = 'O';
 
+    negamax_init();
+
     while (1) {
         char win = check_win(table);
         if (win == 'D') {

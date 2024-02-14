@@ -6,11 +6,14 @@
 
 #include "game.h"
 #include "negamax.h"
+#include "zobrist.h"
 
 #define MAX_SEARCH_DEPTH 6
 
 static int history_score_sum[N_GRIDS];
 static int history_count[N_GRIDS];
+
+static unsigned long long hash_value;
 
 static int cmp_moves(const void *a, const void *b)
 {
@@ -73,6 +76,9 @@ static move_t negamax(char *table, int depth, char player, int alpha, int beta)
         move_t result = {get_score(table, player), -1};
         return result;
     }
+    zobrist_entry_t *entry = zobrist_get(hash_value);
+    if (entry)
+        return (move_t){.score = entry->score, .move = entry->move};
 
     int score;
     move_t best_move = {-10000, -1};
@@ -83,6 +89,7 @@ static move_t negamax(char *table, int depth, char player, int alpha, int beta)
     qsort(moves, n_moves, sizeof(int), cmp_moves);
     for (int i = 0; i < n_moves; i++) {
         table[moves[i]] = player;
+        hash_value ^= zobrist_table[moves[i]][player == 'X'];
         if (!i)  // do a full search on the first move
             score = -negamax(table, depth - 1, player == 'X' ? 'O' : 'X', -beta,
                              -alpha)
@@ -104,6 +111,7 @@ static move_t negamax(char *table, int depth, char player, int alpha, int beta)
             best_move.move = moves[i];
         }
         table[moves[i]] = ' ';
+        hash_value ^= zobrist_table[moves[i]][player == 'X'];
         if (score > alpha)
             alpha = score;
         if (alpha >= beta)
@@ -111,7 +119,14 @@ static move_t negamax(char *table, int depth, char player, int alpha, int beta)
     }
 
     free((char *) moves);
+    zobrist_put(hash_value, best_move.score, best_move.move);
     return best_move;
+}
+
+void negamax_init()
+{
+    zobrist_init();
+    hash_value = 0;
 }
 
 move_t negamax_predict(char *table, char player)
@@ -119,7 +134,9 @@ move_t negamax_predict(char *table, char player)
     memset(history_score_sum, 0, sizeof(history_score_sum));
     memset(history_count, 0, sizeof(history_count));
     move_t result;
-    for (int depth = 2; depth <= MAX_SEARCH_DEPTH; depth += 2)
+    for (int depth = 2; depth <= MAX_SEARCH_DEPTH; depth += 2) {
         result = negamax(table, depth, player, -100000, 100000);
+        zobrist_clear();
+    }
     return result;
 }
