@@ -13,6 +13,8 @@ $(GIT_HOOKS):
 
 OBJS := \
 	game.o \
+	mt19937-64.o \
+	zobrist.o \
 	agents/negamax.o \
 	main.o
 deps := $(OBJS:%.o=%.d)
