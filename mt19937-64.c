@@ -63,12 +63,12 @@
 
 
 /* The array for the state vector */
-static unsigned long long mt[NN];
+static uint64_t mt[NN];
 /* mti==NN+1 means mt[NN] is not initialized */
 static int mti = NN + 1;
 
 /* initializes mt[NN] with a seed */
-void mt19937_init(unsigned long long seed)
+void mt19937_init(uint64_t seed)
 {
     mt[0] = seed;
     for (mti = 1; mti < NN; mti++)
@@ -78,11 +78,11 @@ void mt19937_init(unsigned long long seed)
 }
 
 /* generates a random number on [0, 2^64-1]-interval */
-unsigned long long mt19937_rand(void)
+uint64_t mt19937_rand(void)
 {
     int i;
-    unsigned long long x;
-    static unsigned long long mag01[2] = {0ULL, MATRIX_A};
+    uint64_t x;
+    static uint64_t mag01[2] = {0ULL, MATRIX_A};
 
     if (mti >= NN) { /* generate NN words at one time */
 

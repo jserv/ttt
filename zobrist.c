@@ -4,7 +4,7 @@
 #include "mt19937-64.h"
 #include "zobrist.h"
 
-unsigned long long zobrist_table[N_GRIDS][2];
+uint64_t zobrist_table[N_GRIDS][2];
 
 #define HASH(key) ((key) % HASH_TABLE_SIZE)
 
@@ -23,7 +23,7 @@ void zobrist_init(void)
         INIT_HLIST_HEAD(&hash_table[i]);
 }
 
-zobrist_entry_t *zobrist_get(unsigned long long key)
+zobrist_entry_t *zobrist_get(uint64_t key)
 {
     unsigned long long hash_key = HASH(key);
 
@@ -44,7 +44,7 @@ zobrist_entry_t *zobrist_get(unsigned long long key)
     return NULL;
 }
 
-void zobrist_put(unsigned long long key, int score, int move)
+void zobrist_put(uint64_t key, int score, int move)
 {
     unsigned long long hash_key = HASH(key);
     zobrist_entry_t *new_entry = malloc(sizeof(zobrist_entry_t));
