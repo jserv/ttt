@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <ctype.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,7 +14,7 @@
 static int history_score_sum[N_GRIDS];
 static int history_count[N_GRIDS];
 
-static unsigned long long hash_value;
+static uint64_t hash_value;
 
 static int cmp_moves(const void *a, const void *b)
 {
