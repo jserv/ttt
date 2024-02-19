@@ -10,6 +10,8 @@
 #include "game.h"
 #ifdef USE_TD
 #include "agents/temporal_difference.h"
+#elif defined(USE_MCTS)
+#include "agents/mcts.h"
 #else
 #include "agents/negamax.h"
 #endif
@@ -107,6 +109,8 @@ int main()
     CALC_STATE_NUM(state_num);
     init_td_agent(&agent, state_num, 'O');
     load_model(&agent, state_num, MODEL_NAME);
+#elif defined(USE_MCTS)
+    // A routine for initializing MCTS is not required.
 #else
     negamax_init();
 #endif
@@ -126,6 +130,12 @@ int main()
 #ifdef USE_TD
             int move = play_td(table, &agent);
             record_move(move);
+#elif defined(USE_MCTS)
+            int move = mcts(table, ai);
+            if (move != -1) {
+                table[move] = ai;
+                record_move(move);
+            }
 #else
             int move = negamax_predict(table, ai).move;
             if (move != -1) {

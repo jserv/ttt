@@ -1,7 +1,7 @@
 # ttt
 
 An implementation of [tic-tac-toe](https://en.wikipedia.org/wiki/Tic-tac-toe) in C,
-featuring an AI powered by the [negamax](https://en.wikipedia.org/wiki/Negamax) algorithm and the [TD learning](https://en.wikipedia.org/wiki/Temporal_difference_learning) algorithm.
+featuring an AI powered by the [negamax](https://en.wikipedia.org/wiki/Negamax) algorithm, [TD learning](https://en.wikipedia.org/wiki/Temporal_difference_learning) algorithm, and the [Monte Carlo tree search (MCTS)](https://en.wikipedia.org/wiki/Monte_Carlo_tree_search) algorithm.
 
 ## Run
 If you want to play with negamax AI:
@@ -36,6 +36,20 @@ $ make td
 and run:
 ```bash
 $ ./td
+```
+
+If you want to play with MCTS AI:  
+There are several hyperparameters you can modify:
+- **EXPLORATION_FACTOR**  in `agents/mcts.h` :  The exploration parameter.
+- **ITERATIONS**  in `agents/mcts.h` :  Number of simulations in MCTS.
+
+Build the game:
+```bash
+$ make mcts
+```
+and run:
+```bash
+$ ./mcts
 ```
 
 These program operate entirely in the terminal environment.

@@ -4,7 +4,10 @@ CFLAGS += -I. -MMD
 LDFLAGS :=
 TRAIN = train
 TD = td
+MCTS = mcts
 TD_CFLAGS := $(CFLAGS) -D USE_TD
+MCTS_CFLAGS := $(CFLAGS) -D USE_MCTS
+MCTS_LDFLAGS := $(LDFLAGS) -lm
 
 GIT_HOOKS := .git/hooks/applied
 
@@ -22,6 +25,7 @@ OBJS := \
 	main.o
 deps := $(OBJS:%.o=%.d)
 deps += $(TRAIN).d $(TD).d
+deps += $(MCTS).d
 
 $(PROG): $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
@@ -32,6 +36,9 @@ $(TD): main.c agents/temporal_difference.c game.c
 $(TRAIN): $(TRAIN).c agents/temporal_difference.c game.c
 	$(CC) $(CFLAGS) -o $@ $^
 
+$(MCTS): main.c agents/mcts.c game.c
+	$(CC) -o $@ $^ $(MCTS_CFLAGS) $(MCTS_LDFLAGS)
+
 clean:
-	-$(RM) $(PROG) $(OBJS) $(deps) $(TRAIN) $(TD)
+	-$(RM) $(PROG) $(OBJS) $(deps) $(TRAIN) $(TD) $(MCTS)
 	-$(RM) *.bin
