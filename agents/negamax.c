@@ -7,6 +7,7 @@
 
 #include "game.h"
 #include "negamax.h"
+#include "util.h"
 #include "zobrist.h"
 
 #define MAX_SEARCH_DEPTH 6
@@ -26,49 +27,6 @@ static int cmp_moves(const void *a, const void *b)
     if (history_count[*_b])
         score_b = history_score_sum[*_b] / history_count[*_b];
     return score_b - score_a;
-}
-
-static int eval_line_segment_score(const char *table,
-                                   char player,
-                                   int i,
-                                   int j,
-                                   line_t line)
-{
-    int score = 0;
-    for (int k = 0; k < GOAL; k++) {
-        char curr =
-            table[GET_INDEX(i + k * line.i_shift, j + k * line.j_shift)];
-        if (curr == player) {
-            if (score < 0)
-                return 0;
-            if (score)
-                score *= 10;
-            else
-                score = 1;
-        } else if (curr != ' ') {
-            if (score > 0)
-                return 0;
-            if (score)
-                score *= 10;
-            else
-                score = -1;
-        }
-    }
-    return score;
-}
-
-static int get_score(const char *table, char player)
-{
-    int score = 0;
-    for (int i_line = 0; i_line < 4; ++i_line) {
-        line_t line = lines[i_line];
-        for (int i = line.i_lower_bound; i < line.i_upper_bound; ++i) {
-            for (int j = line.j_lower_bound; j < line.j_upper_bound; ++j) {
-                score += eval_line_segment_score(table, player, i, j, line);
-            }
-        }
-    }
-    return score;
 }
 
 static move_t negamax(char *table, int depth, char player, int alpha, int beta)

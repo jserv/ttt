@@ -26,3 +26,7 @@ jobs:
             sudo apt-get install -q -y build-essential make
       - name: default build
         run: make
+      - name: train build
+        run: make train
+      - name: td build
+        run: make td

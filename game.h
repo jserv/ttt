@@ -17,3 +17,4 @@ extern const line_t lines[4];
 
 int *available_moves(char *table);
 char check_win(char *t);
+void draw_board(const char *t);
