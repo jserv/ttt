@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "game.h"
 #ifdef USE_RL
@@ -98,6 +99,7 @@ static int get_input(char player)
 
 int main()
 {
+    srand(time(NULL));
     char table[N_GRIDS];
     memset(table, ' ', N_GRIDS);
     char turn = 'X';

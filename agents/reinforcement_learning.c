@@ -61,24 +61,26 @@ int get_action_exploit(char *table, rl_agent_t *agent)
     int max_act = -1;
     float max_q = -FLT_MAX;
     float *state_value = agent->state_value;
-    char *try_table = malloc(sizeof(char) * N_GRIDS);
-    if (!try_table) {
-        perror("Failed to allocate memory");
-        exit(1);
-    }
+    int candidate_count = 1;
     printf("[ ");
     for_each_empty_grid (i, table) {
-        memcpy(try_table, table, sizeof(char) * N_GRIDS);
-        try_table[i] = agent->player;
-        printf("%f ", state_value[table_to_hash(try_table)]);
-        if (state_value[table_to_hash(try_table)] > max_q) {
-            max_q = state_value[table_to_hash(try_table)];
+        table[i] = agent->player;
+        float new_q = state_value[table_to_hash(table)];
+        printf("%f ", new_q);
+        if (new_q == max_q) {
+            ++candidate_count;
+            if (rand() % candidate_count == 0) {
+                max_act = i;
+            }
+        } else if (new_q > max_q) {
+            candidate_count = 1;
+            max_q = new_q;
             max_act = i;
         }
+        table[i] = ' ';
     }
     printf(" ]\n");
     printf("exploit %d\n", max_act);
-    free(try_table);
     return max_act;
 }
 
