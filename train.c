@@ -95,10 +95,12 @@ static int *get_available_moves(char *table, int *ret_size)
 static int get_action_epsilon_greedy(char *table, rl_agent_t *agent)
 {
     int move_cnt = 0;
-    int *available_moves = get_available_moves(table, &move_cnt);
     if (RAND_UNIFORM < epsilon) {  // explore
-        printf("explore %d\n", available_moves[rand() % move_cnt]);
-        return available_moves[rand() % move_cnt];
+        int *available_moves = get_available_moves(table, &move_cnt);
+        int act = available_moves[rand() % move_cnt];
+        printf("explore %d\n", act);
+        free(available_moves);
+        return act;
     }
     int act = get_action_exploit(table, agent);
     epsilon *= decay_factor;
