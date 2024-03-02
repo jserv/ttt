@@ -62,6 +62,15 @@ char check_win(char *t)
     return 'D';
 }
 
+double calculate_win_value(char win, char player)
+{
+    if (win == player)
+        return 1.0;
+    if (win == (player ^ 'O' ^ 'X'))
+        return 0.0;
+    return 0.5;
+}
+
 int *available_moves(char *table)
 {
     int *moves = malloc(N_GRIDS * sizeof(int));
