@@ -1,9 +1,11 @@
 # ttt
 
 An implementation of [tic-tac-toe](https://en.wikipedia.org/wiki/Tic-tac-toe) in C,
-featuring an AI powered by the [negamax](https://en.wikipedia.org/wiki/Negamax) algorithm, [TD learning](https://en.wikipedia.org/wiki/Temporal_difference_learning) algorithm, and the [Monte Carlo tree search (MCTS)](https://en.wikipedia.org/wiki/Monte_Carlo_tree_search) algorithm.
+featuring an AI powered by the [negamax](https://en.wikipedia.org/wiki/Negamax) algorithm, the [reinforcement learning (RL)](https://en.wikipedia.org/wiki/Reinforcement_learning) algorithm, the [Monte Carlo tree search (MCTS)](https://en.wikipedia.org/wiki/Monte_Carlo_tree_search) algorithm. And the RL algorithm contains the [Monte Carlo learning](https://en.wikipedia.org/wiki/Monte_Carlo_method) algorithm and [TD learning](https://en.wikipedia.org/wiki/Temporal_difference_learning) algorithm.
 
-## Run
+
+## Build
+### negamax AI
 If you want to play with negamax AI:
 Build the game:
 ```bash
@@ -13,11 +15,16 @@ and run:
 ```bash
 $ ./ttt
 ```
-If you want to play with TD learning AI:
-Train the state value table first, you could modify 
-- **EPSILON_START** **EPSILON_END**  in `train.c` :  $\epsilon$ in [Epsilon-Greedy Algorithm](https://stanford-cs221.github.io/autumn2020-extra/modules/mdps/epsilon-greedy.pdf) and it would decay exponentially.
-- **NUM_ITERATION** in `train.c`: nums of game iteration 
-- **LEARNING_RATE**, **GAMMA** in `temporal_difference.h`: $\alpha$, $\gamma$ in TD learning.
+### reinforcement learning AI
+If you want to play with RL AI:
+Train the state value table first, you could modify the hyperparameters, which are macros in `train.c`:
+- **MONTE_CARLO** : Decide whether or not to use the Monte Carlo method or the TD method.
+- **REWARD_TRADEOFF** : Decide the reward of the Markov decision model, which is a balance between the episode reward and the score from `get_score`. Those who want to fully customize the reward can modify it in the `init_agent` function.
+- **INITIAL_MULTIPLIER** : Decide the initial state value, which is the multiplier of `get_score` in the initial state value. Those who want to fully customize the initial state value can modify it in the `init_agent` function.
+- **EPSILON_GREEDY** : Decide whether or not to use epsilon-greedy exploration when training.
+- **NUM_EPISODE** : the number of game episode in training 
+- **LEARNING_RATE**, **GAMMA** : $\alpha$, $\gamma$ in training.
+- **EPSILON_START** **EPSILON_END** : $\epsilon$ in [Epsilon-Greedy Algorithm](https://stanford-cs221.github.io/autumn2020-extra/modules/mdps/epsilon-greedy.pdf) and it would decay exponentially.
 
 
 compile
@@ -29,15 +36,15 @@ and run:
 $./train
 ```
 
-Build the game playing with TD agent, it would load the pretrained model from `train`:
+Build the game playing with RL agent, it would load the pretrained model from `train`:
 ```bash
-$ make td
+$ make rl
 ```
 and run:
 ```bash
-$ ./td
+$ ./rl
 ```
-
+### MCTS AI
 If you want to play with MCTS AI:  
 There are several hyperparameters you can modify:
 - **EXPLORATION_FACTOR**  in `agents/mcts.h` :  The exploration parameter.
@@ -52,6 +59,7 @@ and run:
 $ ./mcts
 ```
 
+## Run
 These program operate entirely in the terminal environment.
 Below is its appearance as it awaits your next move:
 ```

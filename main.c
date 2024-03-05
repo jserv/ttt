@@ -6,10 +6,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "game.h"
-#ifdef USE_TD
-#include "agents/temporal_difference.h"
+#ifdef USE_RL
+#include "agents/reinforcement_learning.h"
 #elif defined(USE_MCTS)
 #include "agents/mcts.h"
 #else
@@ -98,16 +99,17 @@ static int get_input(char player)
 
 int main()
 {
+    srand(time(NULL));
     char table[N_GRIDS];
     memset(table, ' ', N_GRIDS);
     char turn = 'X';
     char ai = 'O';
 
-#ifdef USE_TD
-    td_agent_t agent;
+#ifdef USE_RL
+    rl_agent_t agent;
     unsigned int state_num = 1;
     CALC_STATE_NUM(state_num);
-    init_td_agent(&agent, state_num, 'O');
+    init_rl_agent(&agent, state_num, 'O');
     load_model(&agent, state_num, MODEL_NAME);
 #elif defined(USE_MCTS)
     // A routine for initializing MCTS is not required.
@@ -127,8 +129,8 @@ int main()
         }
 
         if (turn == ai) {
-#ifdef USE_TD
-            int move = play_td(table, &agent);
+#ifdef USE_RL
+            int move = play_rl(table, &agent);
             record_move(move);
 #elif defined(USE_MCTS)
             int move = mcts(table, ai);

@@ -37,15 +37,6 @@ static void free_node(struct node *node)
     free(node);
 }
 
-static inline double calculate_win_value(char win, char player)
-{
-    if (win == player)
-        return 1.0;
-    if (win == (player ^ 'O' ^ 'X'))
-        return 0.0;
-    return 0.5;
-}
-
 static inline double uct_score(int n_total, int n_visits, double score)
 {
     if (n_visits == 0)
