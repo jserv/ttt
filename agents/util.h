@@ -1,3 +1,5 @@
+#pragma once
+
 #include "game.h"
 
 static inline int eval_line_segment_score(const char *table,
