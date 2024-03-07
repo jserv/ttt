@@ -67,3 +67,10 @@ void zobrist_clear(void)
         INIT_HLIST_HEAD(&hash_table[i]);
     }
 }
+
+void zobrist_destroy_table(void)
+{
+    zobrist_clear();
+    free(hash_table);
+    hash_table = NULL;
+}
