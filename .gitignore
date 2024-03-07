@@ -5,3 +5,4 @@ train
 *.bin
 rl
 mcts
+elo

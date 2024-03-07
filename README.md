@@ -59,6 +59,21 @@ and run:
 $ ./mcts
 ```
 
+### ELO rating system
+There are several hyperparameters you can modify:
+- **N_GAMES**  in `elo.c` :  The number of games played to calculate the ELO rating.
+- **ELO_INIT**  in `elo.c` :  The initial ELO rating assigned to a player before any games are played.
+- **ELO_K**  in `elo.c` :  The coefficient used in the ELO calculation formula to determine the impact of each game's outcome on the player's rating.
+
+Build the elo system:
+```bash
+$ make elo
+```
+and run:
+```bash
+$ ./elo
+```
+
 ## Run
 These program operate entirely in the terminal environment.
 Below is its appearance as it awaits your next move:
