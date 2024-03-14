@@ -50,7 +50,7 @@ _Static_assert(MONTE_CARLO == 0 || MONTE_CARLO == 1,
 _Static_assert(GAMMA >= 0 && GAMMA < 1,
                "Gamma must be within the range [0, 1)");
 _Static_assert(REWARD_TRADEOFF >= 0 && REWARD_TRADEOFF <= 1,
-               "REWARD_TRADEOFF must be be within the range [0, 1]");
+               "REWARD_TRADEOFF must be within the range [0, 1]");
 _Static_assert(EPSILON_END >= 0, "EPSILON_END must not be less than 0");
 _Static_assert(EPSILON_START >= EPSILON_END,
                "EPSILON_START must not be less than EPSILON_END");
