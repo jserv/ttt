@@ -7,6 +7,9 @@
 #include "reinforcement_learning.h"
 #include "util.h"
 
+// Uncomment it if you want to see the log output.
+// #define VERBOSE
+
 // TODO: Find a more efficient hash, we could not store 5x5 or larger board,
 // Since we could have 3^25 states and it might overflow.
 int table_to_hash(char *table)
@@ -62,11 +65,15 @@ int get_action_exploit(char *table, rl_agent_t *agent)
     float max_q = -FLT_MAX;
     float *state_value = agent->state_value;
     int candidate_count = 1;
+#ifdef VERBOSE
     printf("[ ");
+#endif
     for_each_empty_grid (i, table) {
         table[i] = agent->player;
         float new_q = state_value[table_to_hash(table)];
+#ifdef VERBOSE
         printf("%f ", new_q);
+#endif
         if (new_q == max_q) {
             ++candidate_count;
             if (rand() % candidate_count == 0) {
@@ -79,8 +86,10 @@ int get_action_exploit(char *table, rl_agent_t *agent)
         }
         table[i] = ' ';
     }
+#ifdef VERBOSE
     printf(" ]\n");
     printf("exploit %d\n", max_act);
+#endif
     return max_act;
 }
 
