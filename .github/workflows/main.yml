@@ -32,3 +32,5 @@ jobs:
         run: make train
       - name: rl build
         run: make rl
+      - name: elo build
+        run: make elo
