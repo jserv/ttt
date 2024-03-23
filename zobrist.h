@@ -20,3 +20,4 @@ void zobrist_init(void);
 zobrist_entry_t *zobrist_get(uint64_t key);
 void zobrist_put(uint64_t key, int score, int move);
 void zobrist_clear(void);
+void zobrist_destroy_table(void);
