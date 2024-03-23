@@ -28,6 +28,9 @@
 #define EPSILON_START 0.5
 #define EPSILON_END 0.001
 
+// Uncomment it if you want to see the log output.
+// #define VERBOSE
+
 #define RAND_UNIFORM ((float) rand() / (float) RAND_MAX)
 
 #if EPSILON_GREEDY
@@ -98,7 +101,9 @@ static int get_action_epsilon_greedy(char *table, rl_agent_t *agent)
     if (RAND_UNIFORM < epsilon) {  // explore
         int *available_moves = get_available_moves(table, &move_cnt);
         int act = available_moves[rand() % move_cnt];
+#ifdef VERBOSE
         printf("explore %d\n", act);
+#endif
         free(available_moves);
         return act;
     }
@@ -136,12 +141,16 @@ static void train(int iter)
     char win = ' ';
     while (1) {
         if (win == 'D') {
+#ifdef VERBOSE
             draw_board(table);
             printf("It is a draw!\n");
+#endif
             break;
         } else if (win != ' ') {
+#ifdef VERBOSE
             draw_board(table);
             printf("%c won!\n", win);
+#endif
             break;
         }
 #if EPSILON_GREEDY
@@ -156,7 +165,9 @@ static void train(int iter)
             (1 - REWARD_TRADEOFF) * get_score(table, agent[turn].player) +
             REWARD_TRADEOFF * calculate_win_value(win, agent[turn].player);
         ++episode_len;
+#ifdef VERBOSE
         draw_board(table);
+#endif
         turn = !turn;
     }
     turn = !turn;  // the player who makes the last move.
