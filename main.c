@@ -90,6 +90,9 @@ static int get_input(char player)
             x = y = 0;
             break;
         }
+        // input does not have row number
+        if (x > 0 && x <= BOARD_SIZE && parseX == 1)
+            printf("Invalid operation: No row number\n");
         x -= 1;
         y -= 1;
     }
