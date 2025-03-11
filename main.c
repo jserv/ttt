@@ -48,8 +48,10 @@ static int get_input(char player)
     while (x < 0 || x > (BOARD_SIZE - 1) || y < 0 || y > (BOARD_SIZE - 1)) {
         printf("%c> ", player);
         int r = getline(&line, &line_length, stdin);
-        if (r == -1)
+        if (r == -1) {
+            free(line);
             exit(1);
+        }
         if (r < 2)
             continue;
         x = 0;
