@@ -85,6 +85,12 @@ static int get_input(char player)
             parseX = 0;
             if (isdigit(line[i])) {
                 y = y * 10 + line[i] - '0';
+                // index cannot be 0
+                if (y == 0) {
+                    printf("Invalid operation: index cannot be 0\n");
+                    x = y = 0;
+                    break;
+                }
                 if (y > BOARD_SIZE) {
                     // could be any value in [BOARD_SIZE + 1, INT_MAX]
                     y = BOARD_SIZE + 1;
