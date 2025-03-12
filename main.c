@@ -59,6 +59,14 @@ static int get_input(char player)
         parseX = 1;
         for (int i = 0; i < (r - 1); i++) {
             if (isalpha(line[i]) && parseX) {
+                // input has multiple column alphabets
+                if (i > 0 && isalpha(line[i])) {
+                    printf(
+                        "Invalid operation: multiple column alphabets "
+                        "detected\n");
+                    x = y = 0;
+                    break;
+                }
                 x = x * 26 + (tolower(line[i]) - 'a' + 1);
                 if (x > BOARD_SIZE) {
                     // could be any value in [BOARD_SIZE + 1, INT_MAX]
@@ -92,7 +100,7 @@ static int get_input(char player)
             x = y = 0;
             break;
         }
-        // input does not have row number
+        // input does not have row numbers
         if (x > 0 && x <= BOARD_SIZE && parseX == 1)
             printf("Invalid operation: No row number\n");
         x -= 1;
